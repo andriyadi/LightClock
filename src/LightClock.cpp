@@ -19,8 +19,6 @@
 #define CLK 0
 #define DIO 10
 
-
-
 const uint8_t SEG_DONE[] = {
         SEG_B | SEG_C | SEG_D | SEG_E | SEG_G,           // d
         SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F,   // O
@@ -30,9 +28,9 @@ const uint8_t SEG_DONE[] = {
 
 RtcDS3231 Rtc;
 TM1637Display display(CLK, DIO);
-Ticker timeTicker;
+//Ticker timeTicker;
 
-#define NUM_LEDS 16
+#define NUM_LEDS 16   // <==== CHANGE THIS BASED ON AVAILABLE NEOPIXEL LEDS
 
 const uint8_t ONE_PIXEL_FOR_EVERY_SECONDS  = roundf(60*1.0f/NUM_LEDS);
 
@@ -90,7 +88,7 @@ void timeTicked() {
 
     //Serial.printf("%d sec\n", theSecond);
 
-    if (theSecond % 5 == 0 && theSecond > 0) {
+    if (theSecond % 6 == 0 && theSecond != 0) {
         display.showNumberDec(temp.AsFloat() * 100, true);
         segto = 0x80 | display.encodeDigit(temp.AsWholeDegrees() % 10);
         display.setSegments(&segto, 1, 1);
@@ -111,9 +109,9 @@ void timeTicked() {
     for(uint8_t i = 0; i< NUM_LEDS; i++)
     {
         if (i == pixelNo) {
-            pixels[i].R = random(40, 255);//50 + (random(SECOND_TO_PIXEL_GAP) * random(12));
-            pixels[i].G = random(40, 255);//70 + (random(SECOND_TO_PIXEL_GAP) * random(12));
-            pixels[i].B = random(40, 255);//120 + (random(SECOND_TO_PIXEL_GAP) * random(12));
+            pixels[i].R = 0.9*random(40, 255);//50 + (random(SECOND_TO_PIXEL_GAP) * random(12));
+            pixels[i].G = 0.9*random(40, 255);//70 + (random(SECOND_TO_PIXEL_GAP) * random(12));
+            pixels[i].B = 0.9*random(40, 255);//120 + (random(SECOND_TO_PIXEL_GAP) * random(12));
         }
         else {
             pixels[i].R = 0;
@@ -121,10 +119,6 @@ void timeTicked() {
             pixels[i].B = 0;
         }
     }
-
-//    pixels[pixelNo-1].R = 100;
-//    pixels[pixelNo-1].G = 100;
-//    pixels[pixelNo-1].B = 100;
 
     ledstrip.show(pixels);
 }
@@ -143,6 +137,7 @@ void setup() {
     Serial.print("compiled: ");
     Serial.print(__DATE__);
     Serial.println(__TIME__);
+
 
     //--------RTC SETUP ------------
     Rtc.Begin();
